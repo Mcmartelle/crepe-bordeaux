@@ -1,0 +1,18 @@
+[package]
+name = "crepe-bordeaux"
+version = "0.0.1"
+edition = "2021"
+authors = ["Matthew Martelle <matthew@martelle.dev"]
+license = "MIT OR Apache-2.0"
+description = "The cross-platform clipboard cli tool"
+
+
+[[bin]]
+name = "cb"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0.80"
+arboard = "3.3.2"
+atty = "0.2.14"
+clap = { version = "4.5.1", features = ["derive"] }
