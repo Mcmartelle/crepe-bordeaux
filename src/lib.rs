@@ -67,6 +67,17 @@ pub fn get_dir() -> Result<PathBuf> {
     return Ok(path);
 }
 
+fn get_register_paths() -> Result<Vec<PathBuf>> {
+    return Ok(fs::read_dir(get_dir()?)?
+        .map(|res| res.map(|e| e.path()))
+        .filter_map(|x| x.ok())
+        .filter(|x| x.is_file())
+        .filter(|x| x.extension().is_some_and(|extension| extension == "txt"))
+        .filter(|x| x.file_stem().is_some_and(|file_stem| !file_stem.is_empty()))
+        .map(|path| path)
+        .collect::<Vec<PathBuf>>());
+}
+
 fn copy_to_file(content: &str, filename: &str, verbose: bool) -> Result<()> {
     let dir = get_dir()?;
     fs::create_dir_all(&dir)?;
@@ -94,12 +105,9 @@ fn paste_from_file(filepath: PathBuf) -> Result<()> {
 }
 
 pub fn list() -> Result<()> {
-    let mut register_names = fs::read_dir(get_dir()?)?
-        .map(|res| res.map(|e| e.path()))
-        .filter_map(|x| x.ok())
-        .filter(|x| x.is_file())
-        .filter(|x| x.extension().is_some_and(|extension| extension == "txt"))
-        .filter(|x| x.file_stem().is_some_and(|file_stem| !file_stem.is_empty()))
+    let register_paths = get_register_paths()?;
+    let mut register_names = register_paths
+        .iter()
         .map(|x| String::from(x.file_stem().unwrap().to_str().unwrap()))
         .collect::<Vec<String>>();
 
@@ -111,14 +119,7 @@ pub fn list() -> Result<()> {
 }
 
 pub fn dump() -> Result<()> {
-    let mut register_paths = fs::read_dir(get_dir()?)?
-        .map(|res| res.map(|e| e.path()))
-        .filter_map(|x| x.ok())
-        .filter(|x| x.is_file())
-        .filter(|x| x.extension().is_some_and(|extension| extension == "txt"))
-        .filter(|x| x.file_stem().is_some_and(|file_stem| !file_stem.is_empty()))
-        .map(|path| path)
-        .collect::<Vec<PathBuf>>();
+    let mut register_paths = get_register_paths()?;
 
     register_paths.sort();
 
@@ -133,14 +134,7 @@ pub fn dump() -> Result<()> {
 }
 
 pub fn clear_all() -> Result<()> {
-    let register_paths = fs::read_dir(get_dir()?)?
-        .map(|res| res.map(|e| e.path()))
-        .filter_map(|x| x.ok())
-        .filter(|x| x.is_file())
-        .filter(|x| x.extension().is_some_and(|extension| extension == "txt"))
-        .filter(|x| x.file_stem().is_some_and(|file_stem| !file_stem.is_empty()))
-        .map(|path| path)
-        .collect::<Vec<PathBuf>>();
+    let register_paths = get_register_paths()?;
 
     for path in register_paths {
         fs::remove_file(path)?;

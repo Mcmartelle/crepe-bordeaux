@@ -26,6 +26,8 @@ enum Commands {
     Dir,
     /// Outputs contents of all registers
     Dump,
+    /// Clears specified register
+    Clear,
     /// Clears all registers
     ClearAll,
 }
@@ -44,6 +46,10 @@ fn main() -> Result<()> {
         }
         Some(Commands::Dump) => {
             dump()?;
+            return Ok(());
+        }
+        Some(Commands::Clear) => {
+            println!("clear not implemented yet");
             return Ok(());
         }
         Some(Commands::ClearAll) => {
