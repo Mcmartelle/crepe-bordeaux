@@ -1,12 +1,16 @@
 use anyhow::Result;
 use atty::Stream;
 use clap::{Parser, Subcommand};
-use crepe_bordeaux::{copy, paste};
+use crepe_bordeaux::{clear_all, copy, dump, get_dir, list, paste};
 use std::io::{stdin, Read};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct Cli {
+    /// Print piped in contents and where it was saved
+    #[clap(long)]
+    verbose: bool,
+
     /// Optional register name (Will save to .txt file, not the system clipboard)
     register: Option<String>,
 
@@ -16,7 +20,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Lists non-empty registers
+    /// Lists registers
     List,
     /// Displays register directory
     Dir,
@@ -31,19 +35,19 @@ fn main() -> Result<()> {
 
     match &cli.command {
         Some(Commands::List) => {
-            println!("list, not implemented");
+            list()?;
             return Ok(());
         }
         Some(Commands::Dir) => {
-            println!("dir, not implemented");
+            println!("{}", get_dir()?.to_str().unwrap());
             return Ok(());
         }
         Some(Commands::Dump) => {
-            println!("dump, not implemented");
+            dump()?;
             return Ok(());
         }
         Some(Commands::ClearAll) => {
-            println!("clear-all, not implemented");
+            clear_all()?;
             return Ok(());
         }
         None => {}
@@ -58,7 +62,7 @@ fn main() -> Result<()> {
                 // Handle `echo '' | cb ...` cases
                 true => paste(cli.register.as_deref())?,
                 // Handle `echo 'foo' | cb ...` cases
-                false => copy(content, cli.register.as_deref())?,
+                false => copy(content, cli.register.as_deref(), cli.verbose)?,
             }
         }
         // Handle `cb ...` cases
