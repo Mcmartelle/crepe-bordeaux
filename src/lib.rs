@@ -60,6 +60,9 @@ pub fn get_register_dir() -> Result<PathBuf> {
             path.push("crepe-bordeaux");
         }
     };
+    if !path.is_dir() {
+        fs::create_dir_all(&path)?;
+    }
     Ok(path)
 }
 
