@@ -77,8 +77,6 @@ fn get_register_paths() -> Result<Vec<PathBuf>> {
 }
 
 fn copy_to_file(content: &str, filename: &str, verbose: bool) -> Result<()> {
-    let dir = get_register_dir()?;
-    fs::create_dir_all(dir)?;
     let path = get_register_path(filename)?;
     fs::write(path, content)?;
     if verbose {
