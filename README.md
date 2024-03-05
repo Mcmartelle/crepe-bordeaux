@@ -23,13 +23,13 @@ $ cb clear
 
 ### Save to a register:
 ```console
-$ echo "thing you want to save for a while" | cb memorable-name
+$ echo "thing I want to save for a while" | cb memorable-name
 ```
 
 ### Paste from a register:
 ```console
 $ cb memorable-name
-thing you want to save for a while
+thing I want to save for a while
 ```
 
 ### Clear a register:
@@ -42,7 +42,7 @@ $ cb memorable-name clear
 $ cb clear-all
 ```
 
-### Selecting a register interactively with [fzf](https://github.com/junegunn/fzf) (or [skim](https://github.com/lotabout/skim)) in bash:
+### Select a register interactively with [fzf](https://github.com/junegunn/fzf) (or [skim](https://github.com/lotabout/skim)) in bash:
 ```
 $ cb $(cb list | fzf)
 ```
