@@ -1,7 +1,7 @@
 use anyhow::Result;
 use atty::Stream;
 use clap::{Parser, Subcommand};
-use crepe_bordeaux::{clear_all, copy, dump, get_dir, list, paste};
+use crepe_bordeaux::{clear, clear_all, copy, dump, get_register_dir, list, paste};
 use std::io::{stdin, Read};
 
 #[derive(Parser)]
@@ -41,7 +41,7 @@ fn main() -> Result<()> {
             return Ok(());
         }
         Some(Commands::Dir) => {
-            println!("{}", get_dir()?.to_str().unwrap());
+            println!("{}", get_register_dir()?.to_str().unwrap());
             return Ok(());
         }
         Some(Commands::Dump) => {
@@ -49,7 +49,7 @@ fn main() -> Result<()> {
             return Ok(());
         }
         Some(Commands::Clear) => {
-            println!("clear not implemented yet");
+            clear(cli.register.as_deref())?;
             return Ok(());
         }
         Some(Commands::ClearAll) => {

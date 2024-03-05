@@ -29,7 +29,7 @@ pub fn copy(content: &str, register: Option<&str>, verbose: bool) -> Result<()> 
 pub fn paste(register: Option<&str>) -> Result<()> {
     match register {
         Some(filename) => {
-            let path = get_path(filename)?;
+            let path = get_register_path(filename)?;
             return paste_from_file(path);
         }
         None => match Clipboard::new() {
@@ -39,21 +39,21 @@ pub fn paste(register: Option<&str>) -> Result<()> {
                 return Ok(());
             }
             Err(_) => {
-                let path = get_path("default")?;
+                let path = get_register_path("default")?;
                 return paste_from_file(path);
             }
         },
     };
 }
 
-fn get_path(filename: &str) -> Result<PathBuf> {
-    let mut path = get_dir()?;
-    path.push(Path::new(filename).file_name().unwrap());
+fn get_register_path(filename: &str) -> Result<PathBuf> {
+    let mut path = get_register_dir()?;
+    path.push(Path::new(filename).file_name().unwrap()); // escaping so a string like "../../foo" won't leave the cb directory.
     path.set_extension("txt");
     return Ok(path);
 }
 
-pub fn get_dir() -> Result<PathBuf> {
+pub fn get_register_dir() -> Result<PathBuf> {
     let mut path;
     match env::var("CB_DIR") {
         Ok(cb_dir_str) => {
@@ -68,7 +68,7 @@ pub fn get_dir() -> Result<PathBuf> {
 }
 
 fn get_register_paths() -> Result<Vec<PathBuf>> {
-    return Ok(fs::read_dir(get_dir()?)?
+    return Ok(fs::read_dir(get_register_dir()?)?
         .map(|res| res.map(|e| e.path()))
         .filter_map(|x| x.ok())
         .filter(|x| x.is_file())
@@ -79,9 +79,9 @@ fn get_register_paths() -> Result<Vec<PathBuf>> {
 }
 
 fn copy_to_file(content: &str, filename: &str, verbose: bool) -> Result<()> {
-    let dir = get_dir()?;
+    let dir = get_register_dir()?;
     fs::create_dir_all(&dir)?;
-    let path = get_path(filename)?;
+    let path = get_register_path(filename)?;
     fs::write(&path, &content)?;
     if verbose {
         println!("{}", &content);
@@ -131,6 +131,28 @@ pub fn dump() -> Result<()> {
     println!("{}", StringVec(register_contents));
 
     Ok(())
+}
+
+pub fn clear(register: Option<&str>) -> Result<()> {
+    match register {
+        Some(filename) => {
+            let path = get_register_path(filename)?;
+            fs::remove_file(path)?;
+            return Ok(());
+        }
+        None => match Clipboard::new() {
+            Ok(mut clipboard) => {
+                let text = clipboard.get_text()?;
+                println!("{}", text);
+                return Ok(());
+            }
+            Err(_) => {
+                let path = get_register_path("default")?;
+                fs::remove_file(path)?;
+                return Ok(());
+            }
+        },
+    };
 }
 
 pub fn clear_all() -> Result<()> {
