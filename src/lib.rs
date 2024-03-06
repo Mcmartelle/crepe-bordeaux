@@ -30,8 +30,10 @@ pub fn paste(register: Option<&str>) -> Result<()> {
         }
         None => match Clipboard::new() {
             Ok(mut clipboard) => {
-                let text = clipboard.get_text()?;
-                println!("{}", text);
+                match clipboard.get_text() {
+                    Ok(text) => println!("{}", text),
+                    Err(_) => println!(),
+                }
                 Ok(())
             }
             Err(_) => {
