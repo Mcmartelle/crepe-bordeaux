@@ -1,6 +1,3 @@
-let
-  unstable = import (fetchTarball("channel:nixpkgs-unstable")) {};
-in
 { pkgs ? import <nixpkgs> {} }:
 with pkgs;
   mkShell rec {
@@ -21,7 +18,6 @@ with pkgs;
       xorg.libXrandr
       libxkbcommon
       wayland
-      # unstable.rav1e
     ];
         RUSTC_VERSION = pkgs.lib.readFile ./rust-toolchain;
     # https://github.com/rust-lang/rust-bindgen#environment-variables

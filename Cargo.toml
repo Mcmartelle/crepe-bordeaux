@@ -1,10 +1,19 @@
 [package]
 name = "crepe-bordeaux"
-version = "0.0.1"
+version = "0.1.0"
 edition = "2021"
 authors = ["Matthew Martelle <matthew@martelle.dev"]
 license = "MIT OR Apache-2.0"
 description = "The cross-platform clipboard cli tool"
+homepage = "https://github.com/Mcmartelle/crepe-bordeaux"
+repository = "https://github.com/Mcmartelle/crepe-bordeaux"
+readme = "README.md"
+keywords = ["cli", "clipboard"]
+categories = ["command-line-utilities"]
+exclude = [
+    "shell.nix",
+    "rust-toolchain",
+]
 
 
 [[bin]]
