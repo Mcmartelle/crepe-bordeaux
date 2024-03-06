@@ -1,8 +1,7 @@
 use anyhow::Result;
-use atty::Stream;
 use clap::{Parser, Subcommand};
 use crepe_bordeaux::{clear, clear_all, copy, dump, get_register_dir, list, paste};
-use std::io::{stdin, Read};
+use std::io::{stdin, IsTerminal, Read};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -59,8 +58,8 @@ fn main() -> Result<()> {
         None => {}
     }
 
-    match atty::isnt(Stream::Stdin) {
-        true => {
+    match std::io::stdin().is_terminal() {
+        false => {
             let mut buffer = String::new();
             stdin().read_to_string(&mut buffer).unwrap();
             let content = buffer.trim();
@@ -72,7 +71,7 @@ fn main() -> Result<()> {
             }
         }
         // Handle `cb ...` cases
-        false => paste(cli.register.as_deref())?,
+        true => paste(cli.register.as_deref())?,
     }
 
     Ok(())
