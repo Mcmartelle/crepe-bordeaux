@@ -37,6 +37,14 @@ fn clear_copy_paste_and_list() -> Result<(), Box<dyn std::error::Error>> {
         .stdout("memorable-name\nsecondthing\n");
 
     let mut cmd_clear = Command::cargo_bin("cb")?;
+    let assert_clear = cmd_clear.arg("memorable-name").arg("clear").assert();
+    assert_clear.success().stdout("");
+
+    let mut cmd_list = Command::cargo_bin("cb")?;
+    let assert_list = cmd_list.arg("list").assert();
+    assert_list.success().stdout("secondthing\n");
+
+    let mut cmd_clear = Command::cargo_bin("cb")?;
     let assert_clear = cmd_clear.arg("clear-all").assert();
     assert_clear.success().stdout("");
 
