@@ -22,23 +22,23 @@ pub fn copy(content: &str, register: Option<&str>, verbose: bool) -> Result<()> 
     }
 }
 
-pub fn paste(register: Option<&str>) -> Result<()> {
+pub fn paste(register: Option<&str>, verbose: bool) -> Result<()> {
     match register {
         Some(filename) => {
             let path = get_register_path(filename)?;
-            paste_from_file(path)
+            paste_from_file(path, verbose)
         }
         None => match Clipboard::new() {
             Ok(mut clipboard) => {
                 match clipboard.get_text() {
-                    Ok(text) => println!("{}", text),
-                    Err(_) => println!(),
+                    Ok(text) => print!("{}", text),
+                    Err(_) => print!(""),
                 }
                 Ok(())
             }
             Err(_) => {
                 let path = get_register_path("default")?;
-                paste_from_file(path)
+                paste_from_file(path, verbose)
             }
         },
     }
@@ -88,7 +88,7 @@ fn copy_to_file(content: &str, filename: &str, verbose: bool) -> Result<()> {
     Ok(())
 }
 
-fn paste_from_file(filepath: PathBuf) -> Result<()> {
+fn paste_from_file(filepath: PathBuf, verbose: bool) -> Result<()> {
     match filepath.is_file() {
         true => {
             let x = fs::read_to_string(filepath)?;
@@ -96,7 +96,11 @@ fn paste_from_file(filepath: PathBuf) -> Result<()> {
             Ok(())
         }
         false => {
-            print!("");
+            if verbose {
+                eprintln!("register not found");
+            } else {
+                print!("");
+            }
             Ok(())
         }
     }
@@ -111,7 +115,7 @@ pub fn list() -> Result<()> {
 
     register_names.sort();
 
-    println!("{}", StringVec(register_names));
+    print!("{}", StringVec(register_names));
 
     Ok(())
 }

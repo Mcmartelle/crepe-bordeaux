@@ -32,6 +32,12 @@ $ cb memorable-name
 thing I want to save for a while
 ```
 
+### List registers:
+```console
+$ cb list
+memorable-name
+```
+
 ### Clear a register:
 ```console
 $ cb memorable-name clear

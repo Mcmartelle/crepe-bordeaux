@@ -4,13 +4,17 @@ use crepe_bordeaux::{clear, clear_all, copy, dump, get_register_dir, list, paste
 use std::io::{stdin, IsTerminal, Read};
 
 #[derive(Parser)]
-#[command(version, about, long_about = None)]
+#[command(version, about)]
+/// The cross-platform clipboard cli tool.
+///
+/// Copy to clipboard by piping in text `echo "foo" | cb`
+/// and paste text to stdout by running `cb` on its own.
 struct Cli {
-    /// Print piped in contents and where it was saved
+    /// Print more detailed success and error messages
     #[clap(long)]
     verbose: bool,
 
-    /// Optional register name (Will save to .txt file, not the system clipboard)
+    /// Optional register name (Will save to <register>.txt file, not the system clipboard)
     register: Option<String>,
 
     #[command(subcommand)]
@@ -19,15 +23,15 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Lists registers
+    /// Lists registers saved in the register directory.
     List,
-    /// Displays register directory
+    /// Displays the register directory path defined by Rust's std::env::temp_dir, override by setting the CB_DIR env variable.
     Dir,
     /// Outputs contents of all registers
     Dump,
-    /// Clears specified register
+    /// Clears the specified register. `cb clear` clears the system clipboard. `cb foo clear` clears the 'foo' register.
     Clear,
-    /// Clears all registers
+    /// Clears the system clipboard and all registers
     ClearAll,
 }
 
@@ -65,13 +69,13 @@ fn main() -> Result<()> {
             let content = buffer.trim();
             match content.is_empty() {
                 // Handle `echo '' | cb ...` cases
-                true => paste(cli.register.as_deref())?,
+                true => paste(cli.register.as_deref(), cli.verbose)?,
                 // Handle `echo 'foo' | cb ...` cases
                 false => copy(content, cli.register.as_deref(), cli.verbose)?,
             }
         }
         // Handle `cb ...` cases
-        true => paste(cli.register.as_deref())?,
+        true => paste(cli.register.as_deref(), cli.verbose)?,
     }
 
     Ok(())
